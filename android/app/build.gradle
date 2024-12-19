@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.quanticasoft.mascotas"
-    compileSdk = 33
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

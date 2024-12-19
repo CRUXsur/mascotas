@@ -46,6 +46,12 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     | detached  :  app destruida
     */
 
+    //Si la app ha pasado del background al foreground....
+    // ..Y! si ocurrio un cambio de permisos fuera de la aplicacion
+    if(state == AppLifecycleState.resumed){
+      ref.read(permissionsProvider.notifier).checkPermissions();
+    }
+    
     super.didChangeAppLifecycleState(state);
   }
 

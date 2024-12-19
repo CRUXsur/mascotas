@@ -5,8 +5,14 @@ import 'package:permission_handler/permission_handler.dart';
 //necesitamos hacer state, notifier y provider
 //state notifier provider
 
+//provider
+final permissionsProvider =
+StateNotifierProvider<PermissionsNotifier, PermissionsState>((ref) {
+  return PermissionsNotifier();
+});
 
-//notifier
+
+//notifier o controller
 // El notifier es basicamente una clase que el estado es una instancia de
 // nuestro state
 // Es una clase, que internamente tiene una propiedad llamada state
