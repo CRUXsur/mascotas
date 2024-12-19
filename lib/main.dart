@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mascotas/presentation/presentation.dart';
-import 'package:mascotas/presentation/screens/home/home_screen.dart';
+
 
 
 void main() {

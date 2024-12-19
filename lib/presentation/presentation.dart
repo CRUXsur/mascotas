@@ -1,5 +1,17 @@
+//lib
+// presentation
+
+
+  // providers
+  export 'package:mascotas/presentation/providers/app_state_provider.dart';
+
+  // location
+
+  // permissions
 
 
 
-//providers
-export 'package:mascotas/presentation/providers/app_state_provider.dart';
+  // screens
+    // home
+    export 'package:mascotas/presentation/screens/home/home_screen.dart';
+
