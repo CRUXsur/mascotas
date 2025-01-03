@@ -1,5 +1,13 @@
+import 'dart:convert';
+
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+
+
+import 'package:mascotas/api_connection/api_connection.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -14,9 +22,52 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var celularController = TextEditingController();
   var passwordController = TextEditingController();
-  //var isObsecure = true.obs;
+  var isObsecure = true.obs;
 
 
+  loginUserNow() async {
+
+    try
+    {
+      var res = await http.post(
+        Uri.parse(API.login),
+        body: {
+          "phone": celularController.text.trim(),
+          "password": passwordController.text.trim(),
+        },
+      );
+
+      if(res.statusCode == 200) //from flutter app the connection with api to server - success
+          {
+        var resBodyOfLogin = jsonDecode(res.body);
+        if(resBodyOfLogin['success'] == true)
+        {
+          Fluttertoast.showToast(msg: "Usted ha iniciado sesión exitosamente.");
+
+          //save userInfo to local Storage using Shared Prefrences
+
+
+          Future.delayed(const Duration(milliseconds: 2000), ()
+          {
+            //Get.to( const DashboardFragment());
+          });
+
+        }
+        else
+        {
+          Fluttertoast.showToast(msg: "Credenciales incorrectas.\n Vuelva a intentarlo.");
+        }
+      }
+      else
+      {
+        Fluttertoast.showToast(msg: "Status is not 200");
+      }
+    }
+    catch(errorMsg)
+    {
+      //print("Error :: " + errorMsg.toString());
+    }
+  }
 
 
   @override
@@ -111,11 +162,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const SizedBox(height: 18,),
 
                                   //password
-                                  //Obx(
-                                        //()=>
-                                            TextFormField(
+                                  Obx(
+                                        ()=> TextFormField(
                                       controller: passwordController,
-                                      //obscureText: isObsecure.value,
+                                      obscureText: isObsecure.value,
                                       validator: (val) => val == "" ? "Ingrese su password" : null,
                                       decoration: InputDecoration(
                                         prefixIcon: const Icon(
@@ -123,7 +173,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                           // color: Colors.black,
                                           color: Color(0xFFEF9B53),
                                         ),
-
+                                        suffixIcon: Obx(
+                                              ()=> GestureDetector(
+                                            onTap: ()
+                                            {
+                                              isObsecure.value = !isObsecure.value;
+                                            },
+                                            child: Icon(
+                                              isObsecure.value ? Icons.visibility_off : Icons.visibility,
+                                              // color: Colors.black,
+                                              color: Color(0xFFEF9B53),
+                                            ),
+                                          ),
+                                        ),
                                         hintText: "password...",
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(3),//30
@@ -157,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         filled: true,
                                       ),
                                     ),
-                                  //),
+                                  ),
 
                                   const SizedBox(height: 30,),
 
@@ -170,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       {
                                         if(formKey.currentState!.validate())
                                         {
-                                          //loginUserNow();
+                                          loginUserNow();
                                         }
                                       },
                                       borderRadius: BorderRadius.circular(3),//30
