@@ -1,8 +1,13 @@
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
 
 
-
+import 'package:mascotas/widgets/widgets.dart';
+import 'package:mascotas/api_connection/api_connection.dart';
 
 
 
@@ -10,7 +15,7 @@ import 'package:flutter/material.dart';
 
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -24,8 +29,92 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var emailController = TextEditingController();
   var passController = TextEditingController();
   var confirmPassController = TextEditingController();
-  //var isObsecure = true.obs;
+  var isObsecure = true.obs;
 
+  //validate phone number
+  validateUserCelular() async
+  {
+    try
+    {
+      var res = await http.post(
+        Uri.parse(API.validateCelular),
+        body: {
+          'phone': phoneController.text.trim(),
+        },
+      );
+
+      if(res.statusCode == 200) //from flutter app the connection with api to server - success
+          {
+        var resBodyOfValidatePhone = jsonDecode(res.body);
+
+        if(resBodyOfValidatePhone['phoneFound'] == true)
+        {
+          Fluttertoast.showToast(msg: "El numero ya se encuentra Registrado.");
+        }
+        else
+        {
+          //Fluttertoast.showToast(msg: "You are ready to save to DB SERVER!");
+          //register & save new admin record to database
+          registerAndSaveUserRecord();
+        }
+      }
+      else
+      {
+        Fluttertoast.showToast(msg: "Status is not 200");
+      }
+
+    }
+    catch(e)
+    {
+      //print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  //Save new user register to server db
+  registerAndSaveUserRecord() async
+  {
+    User userModel = User(
+      1,
+      nameController.text.trim(),
+      emailController.text.trim(),
+      phoneController.text.trim(),
+      passController.text.trim(),
+    );
+
+    try
+    {
+      var res = await http.post(
+        Uri.parse(API.register),
+        body: userModel.toJson(),
+      );
+
+      if(res.statusCode == 200) //from flutter app the connection with api to server - success
+          {
+        var resBodyOfSignUp = jsonDecode(res.body);
+        if(resBodyOfSignUp['success'] == true)
+        {
+          Fluttertoast.showToast(msg: "Gracias!, te Registraste con exito!.");
+
+          setState(() {
+            nameController.clear(); //same as! nameController.text = "";
+            emailController.clear();
+            phoneController.clear();
+            passController.clear();
+          });
+        }
+        else
+        {
+          Fluttertoast.showToast(msg: "Ocurrio un Error, Vuelve a intentarlo.");
+        }
+      }
+    }
+    catch(e)
+    {
+      //print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
 
 
   @override
@@ -212,11 +301,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   const SizedBox(height: 18,),
 
                                   //password
-                                  //Obx(
-                                        //()=>
-                                TextFormField(
+                                  Obx(
+                                        ()=> TextFormField(
                                       controller: passController,
-                                      //obscureText: isObsecure.value,
+                                      obscureText: isObsecure.value,
                                       validator: (val) => val == "" ? "Please write password" : null,
                                       decoration: InputDecoration(
                                         prefixIcon: const Icon(
@@ -224,19 +312,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           color: Color(0xFFEF9B53),
                                           // color: Colors.black,
                                         ),
-                                        // suffixIcon: Obx(
-                                        //       ()=> GestureDetector(
-                                        //     onTap: ()
-                                        //     {
-                                        //       isObsecure.value = !isObsecure.value;
-                                        //     },
-                                        //     child: Icon(
-                                        //       isObsecure.value ? Icons.visibility_off : Icons.visibility,
-                                        //       // color: Colors.black,
-                                        //       color: Color(0xFFEF9B53),
-                                        //     ),
-                                        //   ),
-                                        // ),
+                                        suffixIcon: Obx(
+                                              ()=> GestureDetector(
+                                            onTap: ()
+                                            {
+                                              isObsecure.value = !isObsecure.value;
+                                            },
+                                            child: Icon(
+                                              isObsecure.value ? Icons.visibility_off : Icons.visibility,
+                                              // color: Colors.black,
+                                              color: Color(0xFFEF9B53),
+                                            ),
+                                          ),
+                                        ),
                                         hintText: "password...",
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(3),//30
@@ -270,7 +358,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         filled: true,
                                       ),
                                     ),
-                                  //),
+                                  ),
 
                                   const SizedBox(height: 30,),
 
@@ -284,7 +372,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         if(formKey.currentState!.validate())
                                         {
                                           //validate the email
-                                          //validateUserCelular();
+                                          validateUserCelular();
                                         }
                                       },
                                       borderRadius: BorderRadius.circular(3),//30
