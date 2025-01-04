@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../presentation.dart';
 
@@ -12,38 +13,47 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
 
-    final userLocationAsync = ref.watch(UserLocationProvider);
-    final watchLocationAsync = ref.watch(watchLocationProvider);
+
+    final currentPositionAsync = ref.watch( UserLocationProvider );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ubicacion'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-
-            // ! Current Location
-            Text('Ubicacion Actual'),
-            userLocationAsync.when(
-              data: (data) => Text('$data'),
+            body: currentPositionAsync.when(
+              data: (data) => _MapView(initialLat: data.$1, initialLng: data.$2),
               error: (error, stackTrace) => Text('$error'),
-              loading: () => const CircularProgressIndicator(),
+              loading: () => const Center(child: CircularProgressIndicator()),
             ),
-            const SizedBox(height: 30,),
-
-            // ! Lat, Long
-            Text('Seguimiento de Ubicacion'),
-            watchLocationAsync.when(
-              data: (data) => Text('$data'),
-              error: (error, stackTrace) => Text('$error'),
-              loading: () => const CircularProgressIndicator(),
-            ),
-
-          ],
-        ),
-      ),
     );
   }
+}
+
+class _MapView extends StatefulWidget {
+
+  final double initialLat;
+  final double initialLng;
+
+  const _MapView({ required this.initialLat, required this.initialLng });
+
+  @override
+  State<_MapView> createState() => __MapViewState();
+}
+
+class __MapViewState extends State<_MapView> {
+
+  @override
+  Widget build(BuildContext context) {
+    return GoogleMap(
+      mapType: MapType.normal,
+      initialCameraPosition: CameraPosition(
+          target: LatLng( widget.initialLat, widget.initialLng ),
+          zoom: 12
+      ),
+      myLocationEnabled: true,
+      zoomControlsEnabled: false,
+      onMapCreated: (GoogleMapController controller) {
+        // _controller.complete(controller);
+      },
+    );
+  }
+
+
 }
