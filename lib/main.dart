@@ -45,6 +45,11 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     | paused    :  app se mando a segundo plano
     | detached  :  app destruida
     */
+
+    if(state == AppLifecycleState.resumed){
+      ref.read(permissionsProvider.notifier).checkPermissions();
+    }
+
     super.didChangeAppLifecycleState(state);
   }
 
