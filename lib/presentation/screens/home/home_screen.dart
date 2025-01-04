@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../config/config.dart';
 import '../../presentation.dart';
 
 
@@ -49,8 +53,10 @@ class __MapViewState extends State<_MapView> {
       ),
       myLocationEnabled: true,
       zoomControlsEnabled: false,
-      onMapCreated: (GoogleMapController controller) {
-        // _controller.complete(controller);
+      // onMapCreated: (GoogleMapController controller) {
+      //   // _controller.complete(controller);
+      onMapCreated: (GoogleMapController _controller) {
+        _controller.setMapStyle(jsonEncode(uberMapTheme));
       },
     );
   }
