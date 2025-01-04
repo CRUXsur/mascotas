@@ -23,7 +23,7 @@ class PermissionsScreen extends StatelessWidget {
 
 
 class _PermissionsView extends ConsumerWidget {
-  const _PermissionsView({super.key});
+  const _PermissionsView();
 
   @override
   Widget build(BuildContext context, ref) {
@@ -40,6 +40,24 @@ class _PermissionsView extends ConsumerWidget {
           subtitle: Text('${ permissions.camera }'),
           onChanged: (value){
             ref.read(permissionsProvider.notifier).requestCameraAccess();
+          },
+        ),
+
+        CheckboxListTile(
+          value: permissions.photoLibraryGranted,
+          title: const Text('Galería de fotos'),
+          subtitle: Text('${ permissions.photoLibrary }'),
+          onChanged: ( _ ) {
+            ref.read(permissionsProvider.notifier).requestPhotoLibraryAccess();
+          },
+        ),
+
+        CheckboxListTile(
+          value: permissions.locationGranted,
+          title: const Text('Ubicacion'),
+          subtitle: Text('${ permissions.location }'),
+          onChanged: ( _ ) {
+            ref.read(permissionsProvider.notifier).requestLocationAccess();
           },
         ),
 
