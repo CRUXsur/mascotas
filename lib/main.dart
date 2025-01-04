@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
 import 'package:mascotas/presentation/presentation.dart';
 
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope( child: MyApp() ));
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -16,6 +17,7 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  get future => null;
 
   //nos permite crear este observador (del estado de la app)
   @override
@@ -56,19 +58,13 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      title: 'Pets',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Salva una Mascota'),
-        ),
-        body: const Center(
-          child: Text('Mapa!'),
-        ),
+      home: FutureBuilder(
+        future: future,
+        builder: (context, dataSnapShot)
+        => const HomeScreen(),
       ),
     );
   }
